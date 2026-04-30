@@ -6,7 +6,7 @@ from stacks.sqs_stack import SQSStack
 # from stacks.ec2_stack import EC2Stack
 
 app = cdk.App()
-# S3Stack(app, "S3Stack")
+S3Stack(app, "S3Stack")
 SQSStack(app, "SQSStack")
 # EC2Stack(app, "EC2Stack")
 
