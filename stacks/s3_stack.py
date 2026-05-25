@@ -19,6 +19,7 @@ class S3Stack(Stack):
             versioned=True,
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,
+            encryption=s3.BucketEncryption.S3_MANAGED,
         )
 
         # Output the bucket ARN
