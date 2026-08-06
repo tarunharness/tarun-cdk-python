@@ -1,3 +1,2 @@
 aws-cdk-lib==2.170.0
 constructs>=10.0.0,<11.0.0
-cdk-test @ git+ssh://git@github.com/tarunharness/testsshrepo.git#e667980e6a7f512f198698bf18cb4b7a1ea03ae8
