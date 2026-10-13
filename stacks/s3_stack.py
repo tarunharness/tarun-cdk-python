@@ -16,10 +16,10 @@ class S3Stack(Stack):
             self,
             "sunny-cdk-test-bucket-03",
             bucket_name="sunny-cdk-test-bucket-03",
-            versioned=True,
+            versioned=False,
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,
-            #encryption=s3.BucketEncryption.S3_MANAGED,
+            encryption=s3.BucketEncryption.S3_MANAGED,
         )
 
         # Output the bucket ARN
