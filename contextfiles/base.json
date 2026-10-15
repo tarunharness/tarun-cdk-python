@@ -1,0 +1,8 @@
+{
+  "stage": "dev",
+  "region": "us-east-1",
+  "instanceCount": 1,
+  "enableMonitoring": false,
+  "allowedCidrs": ["10.0.0.0/16"],
+  "vpcConfig": { "maxAzs": 2, "natGateways": 1 }
+}
