@@ -23,7 +23,7 @@ class SQSStack(Stack):
             queue_name=queue_name,
             visibility_timeout=Duration.seconds(600),
             retention_period=Duration.days(retention_days),
-            # removal_policy=RemovalPolicy.DESTROY,
+            removal_policy=RemovalPolicy.DESTROY,
         )
 
         # Output the queue ARN
