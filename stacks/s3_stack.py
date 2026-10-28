@@ -1,3 +1,5 @@
+from typing import cast
+
 from aws_cdk import (
     Duration,
     Stack,
@@ -15,6 +17,15 @@ from constructs import Construct
 # 0 gives the original small template, larger values grow it (CloudFormation allows at most
 # 1000 lifecycle rules per bucket; the template must stay under 1MB).
 DEFAULT_TEMPLATE_PADDING_RULES = 336
+
+# Size, in bytes, of an extra padding string stored in the bucket's CloudFormation `Metadata`
+# section (CloudFormation ignores it; nothing is deployed for it). Lifecycle rules alone cannot
+# reach 1MB (S3 allows at most 1000 per bucket, ~145KB), so this pushes the template over
+# CloudFormation's 1MB (1,048,576-byte) limit for templates read from S3, which is the case
+# where even the S3 upload path cannot help. With the defaults, cdk.out/S3Stack.template.json is
+# about 1.1MB. Override with `-c templatePaddingBytes=<n>`: 0 gives the ~60KB template of the
+# 60kb branch (or the original ~11KB one together with `-c templatePaddingRules=0`).
+DEFAULT_TEMPLATE_PADDING_BYTES = 1_040_000
 
 
 class S3Stack(Stack):
@@ -35,6 +46,11 @@ class S3Stack(Stack):
             lifecycle_rules=self._padding_lifecycle_rules(padding_rule_count) or None,
         )
 
+        padding_bytes = self._padding_bytes()
+        if padding_bytes > 0:
+            cfn_bucket = cast(s3.CfnBucket, bucket.node.default_child)
+            cfn_bucket.add_metadata("TemplatePadding", self._padding_text(padding_bytes))
+
         # Output the bucket ARN
         CfnOutput(self, "S3BucketARN",
             value=bucket.bucket_arn,
@@ -48,6 +64,18 @@ class S3Stack(Stack):
         if configured is None:
             return DEFAULT_TEMPLATE_PADDING_RULES
         return int(configured)
+
+    def _padding_bytes(self) -> int:
+        configured = self.node.try_get_context("templatePaddingBytes")
+        if configured is None:
+            return DEFAULT_TEMPLATE_PADDING_BYTES
+        return int(configured)
+
+    @staticmethod
+    def _padding_text(size: int) -> str:
+        # Deterministic ASCII text, so the synthesized template is identical on every run.
+        block = "0123456789abcdef"
+        return (block * (size // len(block) + 1))[:size]
 
     @staticmethod
     def _padding_lifecycle_rules(count: int) -> list:
