@@ -7,7 +7,7 @@
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
+      "Value": "false"
      }
     ],
     "VersioningConfiguration": {
